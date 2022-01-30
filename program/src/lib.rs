@@ -101,25 +101,68 @@ fn withdraw(
     let writing_account = next_account_info(accounts_iter)?;
     let admin_account = next_account_info(accounts_iter)?;
 
-    if writing_account.owner != program_id{
+    if writing_account.owner != program_id {
         msg!("writing_account isn't owned by program");
         return Err(ProgramError::IncorrectProgramId);
     }
-    // Admin account should be the signer in this trasaction.
     if !admin_account.is_signer {
         msg!("admin should be signer");
         return Err(ProgramError::IncorrectProgramId);
     }
-
     let campaign_data = CampaignDetails::try_from_slice(*writing_account.data.borrow())
-        .expect("Error deserializing data");
-    
-    // we check if the admin_account's public key is equal to the public key we have stored in our campaign_data
-    if campaign_data.admin != *admin_account.key {
-        msg!("admin_account's public key is not equal to the public key we have stored in our campaign_data");
-        return Err(ProgramError::InvalidInstructionData);
-    }  
+        .expect("Error deserialaizing data");
 
-    // we will get the amount of lamports admin wants to withdraw
-    let input_data = WithdrawRequest::try_from_slice(&instruction_data).expect("Instruction data serialization didn't")
+    if campaign_data.admin != *admin_account.key {
+        msg!("Only the account admin can withdraw");
+        return Err(ProgramError::InvalidAccountData);
+    }
+    let input_data = WithdrawRequest::try_from_slice(&instruction_data)
+        .expect("Instruction data serialization didn't worked");
+
+    let rent_exemption = Rent::get()?.minimum_balance(writing_account.data_len());
+    if **writing_account.lamports.borrow() - rent_exemption < input_data.amount {
+        msg!("Insufficent balance");
+        return Err(ProgramError::InsufficientFunds);
+    }
+
+    **writing_account.try_borrow_mut_lamports()? -= input_data.amount;
+    **admin_account.try_borrow_mut_lamports()? += input_data.amount;
+
+    Ok(())
+}
+
+fn donate(
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+    _instruction_data: &[u8],
+) -> ProgramResult {
+    let accounts_iter = &mut accounts.iter();
+    let writing_account = next_account_info(accounts_iter)?;
+    let donator_program_account = next_account_info(accounts_iter)?;
+    let donator = next_account_info(accounts_iter)?;
+
+    if writing_account.owner != program_id {
+        msg!("writing_account isn't owned by program");
+        return Err(ProgramError::IncorrectProgramId);
+    }
+    if donator_program_account.owner != program_id {
+        msg!("donator_program_account isn't owned by program");
+        return Err(ProgramError::IncorrectProgramId);
+    }
+    if !donator.is_signer {
+        msg!("donator should be signer");
+        return Err(ProgramError::IncorrectProgramId);
+    }
+
+    let mut campaign_data = CampaignDetails::try_from_slice(*writing_account.data.borrow())
+        .expect("Error deserialaizing data");
+
+    campaign_data.amount_donated += **donator_program_account.lamports.borrow();
+
+    **writing_account.try_borrow_mut_lamports()? += **donator_program_account.lamports.borrow();
+    **donator_program_account.try_borrow_mut_lamports()? = 0;
+
+    campaign_data.serialize(&mut &mut writing_account.data.borrow_mut()[..])?;
+
+    Ok(())
 }
