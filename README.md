@@ -68,3 +68,67 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+## 🔍 Table of Contents
+
+* [💻 Stack](#stack)
+
+* [📝 Project Summary](#project-summary)
+
+* [⚙️ Setting Up](#setting-up)
+
+* [🚀 Run Locally](#run-locally)
+
+* [🙌 Contributors](#contributors)
+
+* [📄 License](#license)
+
+## 💻 Stack
+
+- [solana-program](https://crates.io/crates/solana-program): Solana blockchain program development framework.
+- [borsh](https://crates.io/crates/borsh): Binary Object Serialization for Rust.
+- [borsh-derive](https://crates.io/crates/borsh-derive): Derive macros for Borsh serialization.
+
+## 📝 Project Summary
+
+## ⚙️ Setting Up
+
+#### Your Environment Variable
+
+- Step 1
+
+- Step 2
+
+## 🚀 Run Locally
+1.Clone the crowd-funding repository:
+```sh
+git clone https://github.com/sohomx/crowd-funding
+```
+2.Install the dependencies with one of the package managers listed below:
+```bash
+cargo build
+```
+3.Start the development mode:
+```bash
+cargo run
+```
+
+## 🙌 Contributors
+
+<table style="border:1px solid #404040;text-align:center;width:100%">
+<tr><td style="width:14.29%;border:1px solid #404040;">
+        <a href="https://github.com/sohomx" spellcheck="false">
+          <img src="https://avatars.githubusercontent.com/u/84140043?v=4?s=100" width="100px;" alt="sohomx"/>
+          <br />
+          <b>sohomx</b>
+        </a>
+        <br />
+        <a href="https://github.com/sohomx/crowd-funding/commits?author=sohomx" title="Contributions" spellcheck="false">
+          4 contributions
+        </a>
+      </td></table>
+
+## 📄 License
+
+[**Add Your License**](https://choosealicense.com)
